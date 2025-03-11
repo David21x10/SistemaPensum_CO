@@ -2,10 +2,10 @@
 
 const { where } = require('sequelize');
 const db = require('../config/db');
-const  user= db.user;
+const  clases= db.clases;
 
-async function getUser(req, res){
-user.findAll()
+async function getClases(req, res){
+clases.findAll()
 .then(result=>{
 res.status(200).send({result})
 }).catch(error=> {
@@ -14,6 +14,6 @@ res.status(200).send({result})
 }
 
 module.exports={
-    getUser,
-    
+    getClases,
+
 }
