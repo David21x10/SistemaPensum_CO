@@ -8,6 +8,7 @@ const App = express();
 const alumnoRoutes=require("./routes/alumnoRoutes");
 const userRoutes=require("./routes/userRoutes");
 const clasesRoutes=require("./routes/clasesRoutes");
+const aprobadoRoutes=require("./routes/aprobadoRoutes");
 
 App.use(
     cors({
@@ -23,5 +24,6 @@ App.use(express.urlencoded({extended: false}));
 App.use("/api/Alumno", alumnoRoutes);
 App.use("/api/User", userRoutes);
 App.use("/api/Clases", clasesRoutes);
+App.use("/api/Aprobado", aprobadoRoutes);
 
 module.exports= App;
