@@ -1,24 +1,24 @@
-'use strict'
+"use strict";
 
-const express= require('express');
-const cors= require('cors');
+const express = require("express");
+const cors = require("cors");
 const App = express();
 
 //llamado a routers
-const alumnoRoutes=require("./routes/alumnoRoutes");
-const userRoutes=require("./routes/userRoutes");
-const clasesRoutes=require("./routes/clasesRoutes");
-const aprobadoRoutes=require("./routes/aprobadoRoutes");
+const alumnoRoutes = require("./routes/alumnoRoutes");
+const userRoutes = require("./routes/userRoutes");
+const clasesRoutes = require("./routes/clasesRoutes");
+const aprobadoRoutes = require("./routes/aprobadoRoutes");
 
 App.use(
-    cors({
-        origin: "*", // Reemplaza con el dominio correcto
-    })
+  cors({
+    origin: "*", // Reemplaza con el dominio correcto
+  })
 );
 
-App.use(cors())
-App.use(express.json({limit: '10mb'}));
-App.use(express.urlencoded({extended: false}));
+App.use(cors());
+App.use(express.json({ limit: "10mb" }));
+App.use(express.urlencoded({ extended: false }));
 
 //creacion de endpoints
 App.use("/api/Alumno", alumnoRoutes);
@@ -26,4 +26,4 @@ App.use("/api/User", userRoutes);
 App.use("/api/Clases", clasesRoutes);
 App.use("/api/Aprobado", aprobadoRoutes);
 
-module.exports= App;
+module.exports = App;

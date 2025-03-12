@@ -1,27 +1,27 @@
-'use strict'
+"use strict";
 
-const {DataTypes}= require('sequelize');
+const { DataTypes } = require("sequelize");
 
-module.exports=(sequelize)=>{
-    const attributes ={
-        UserId: {
-            type: DataTypes.STRING(13),
-            primaryKey: true
-        },
-        pass: {
-            type: DataTypes.STRING(255)
-        },
-        RoleId: {
-            type: DataTypes.INTEGER
-        }
-    }
-    const options={
-        defaultScope: {
-            attributes:{ exclude: [ 'updatedAt', 'createdAt']}
-        },
-        scopes:{},
-        tableName: 'user',
-        timestamps: false
-    }
-    return sequelize.define('user', attributes, options);
-}
+module.exports = (sequelize) => {
+  const attributes = {
+    UserId: {
+      type: DataTypes.STRING(13),
+      primaryKey: true,
+    },
+    pass: {
+      type: DataTypes.STRING(255),
+    },
+    RoleId: {
+      type: DataTypes.INTEGER,
+    },
+  };
+  const options = {
+    defaultScope: {
+      attributes: { exclude: ["updatedAt", "createdAt"] },
+    },
+    scopes: {},
+    tableName: "user",
+    timestamps: false,
+  };
+  return sequelize.define("user", attributes, options);
+};
