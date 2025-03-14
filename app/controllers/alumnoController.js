@@ -17,6 +17,8 @@ async function getAlumno(req, res) {
     });
 }
 
+
+
 module.exports = {
-  getAlumno,
+  getAlumno
 };
