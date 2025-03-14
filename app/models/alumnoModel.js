@@ -16,11 +16,8 @@ module.exports = (sequelize) => {
     },
     email: {
       type: DataTypes.STRING(50),
-    },
-    estadoAlumno: {
-      type: DataTypes.TINYINT,
-      allowNull: true,
-    },
+    }
+   
   };
   const options = {
     defaultScope: {

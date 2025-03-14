@@ -11,6 +11,7 @@ module.exports = (sequelize) => {
       primaryKey: true,
     },
     alumnoId: {
+      allowNull: false,
       type: DataTypes.STRING(13),
       references: {
         model: alumnoModel,
