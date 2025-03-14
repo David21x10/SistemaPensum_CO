@@ -19,7 +19,7 @@ async function getUser(req, res) {
 
 const insertUser = async (req, res) => {
   try {
-    const {UserId, pass, RoleId } = req.body;
+    const { UserId, pass, RoleId } = req.body;
 
     if (!UserId || !pass || !RoleId === undefined) {
       return res
@@ -65,9 +65,7 @@ const deleteUser = async (req, res) => {
         .status(200)
         .json({ message: "Usuario eliminado de forma exitosa" });
     } else {
-      return res
-        .status(404)
-        .json({ error: "El usuario no fue encontrado" });
+      return res.status(404).json({ error: "El usuario no fue encontrado" });
     }
   } catch (error) {
     console.error(error);
@@ -88,9 +86,7 @@ const updateUser = async (req, res) => {
     const userUpdate = await user.findByPk(UserId);
 
     if (!userUpdate) {
-      return res
-        .status(404)
-        .json({ error: "El user no fue encontrado" });
+      return res.status(404).json({ error: "El user no fue encontrado" });
     }
 
     if (req.body.newIduser) {
@@ -98,15 +94,13 @@ const updateUser = async (req, res) => {
     }
     await userUpdate.update({
       pass: pass || userUpdate.pass,
-      RoleId: RoleId || userUpdate.RoleId
+      RoleId: RoleId || userUpdate.RoleId,
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Usuario actualizado exitosamente",
-        user: userUpdate,
-      });
+    return res.status(200).json({
+      message: "Usuario actualizado exitosamente",
+      user: userUpdate,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -117,5 +111,5 @@ module.exports = {
   getUser,
   insertUser,
   deleteUser,
-  updateUser
+  updateUser,
 };
