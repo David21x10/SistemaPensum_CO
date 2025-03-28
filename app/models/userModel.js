@@ -4,7 +4,7 @@ const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   const attributes = {
-    UserId: {
+    userId: {
       type: DataTypes.STRING(13),
       primaryKey: true,
     },

@@ -1,115 +1,71 @@
 "use strict";
 
-const { where } = require("sequelize");
 const db = require("../config/db");
-const user = db.user;
+const User = db.user;
+const bcrypt = require('bcrypt');
+const service = require('../services/services');
+const { Op } = require('sequelize');
 
-async function getUser(req, res) {
-  user
-    .findAll()
-    .then((result) => {
-      res.status(200).send({ result });
+async function signUp(req, res) {
+    let newPass = undefined;
+
+    await bcrypt.genSalt(10)
+        .then(async salts => {
+            await bcrypt.hash(req.body['password'], salts)
+                .then(hash => newPass = hash)
+                .catch(error => console.error(error))
+        })
+        .catch(error => console.error(error));
+
+        const existingUser = await User.findOne({ where: { userId: req.body['userId'] } });
+    if (existingUser) {
+        return res.status(400).send({ message: "El usuario ya existe" });
+    }
+
+    User.create({
+        userId: req.body['userId'],
+        pass: newPass,
     })
-    .catch((error) => {
-      res
-        .status(500)
-        .send({ message: error.message || "sucedió un errror inesperado" });
-    });
+        .then(data => {
+            res.status(200).send(data)
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || 'Sucedio un error inesperado'
+            });
+        });
 }
 
-const insertUser = async (req, res) => {
-  try {
-    const { UserId, pass, RoleId } = req.body;
+async function signIn(req, res) {
+    const userId = req.body['userId'];
+    var condition = userId ? { userId: { [Op.eq]: `${userId}` } } : null;
+    User.findOne({ where: condition })
+        .then(data => {
+            if (!data) { res.status(404).send({ message: 'Usuario no encontrado' }) }
+            else {
+                const result = bcrypt.compareSync(req.body['password'], data['pass'], function (err, result) {
+                    if (err) console.error(err)
+                    return result
+                });
+                if (result) {
+                    res.status(200).send({
+                        message: 'Logged in',
+                        userId: data['userId'],
+                        RoleId: data['RoleId'],
+                        token: service.createToken(data['userId']),
+                    });
+                } else {
+                    res.status(500).send({
+                        message: 'Sucedio un error inesperado',
+                    });
+                }
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Sucedio un error al obtener los registros del usuario"
+            })
+        })
+}
 
-    if (!UserId || !pass || !RoleId === undefined) {
-      return res
-        .status(400)
-        .json({ error: "Todos los campos son obligatorios" });
-    }
-
-    const existenciaUser = await user.findOne({
-      where: { UserId },
-    });
-    if (existenciaUser) {
-      return res.status(400).json({ message: "El usuario ya está registrado" });
-    }
-
-    const result = await user.create({
-      UserId,
-      pass,
-      RoleId,
-    });
-
-    return res
-      .status(201)
-      .json({ message: "Usuario registrado con éxito", result });
-  } catch (error) {
-    console.error("Error al insertar en el usuario:", error);
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-const deleteUser = async (req, res) => {
-  try {
-    const { UserId } = req.body;
-
-    if (!UserId) {
-      return res.status(400).json({ error: "El id del usuario es requerido" });
-    }
-
-    const userRemove = await user.findByPk(UserId);
-
-    if (userRemove) {
-      await userRemove.destroy();
-      return res
-        .status(200)
-        .json({ message: "Usuario eliminado de forma exitosa" });
-    } else {
-      return res.status(404).json({ error: "El usuario no fue encontrado" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-const updateUser = async (req, res) => {
-  try {
-    const { UserId, pass, RoleId } = req.body;
-
-    if (!UserId) {
-      return res
-        .status(400)
-        .json({ error: "Se necesita el identificador del usuario" });
-    }
-
-    const userUpdate = await user.findByPk(UserId);
-
-    if (!userUpdate) {
-      return res.status(404).json({ error: "El user no fue encontrado" });
-    }
-
-    if (req.body.newIduser) {
-      userUpdate.UserId = req.body.newIduser;
-    }
-    await userUpdate.update({
-      pass: pass || userUpdate.pass,
-      RoleId: RoleId || userUpdate.RoleId,
-    });
-
-    return res.status(200).json({
-      message: "Usuario actualizado exitosamente",
-      user: userUpdate,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-module.exports = {
-  getUser,
-  insertUser,
-  deleteUser,
-  updateUser,
-};
+module.exports = { signUp, signIn }

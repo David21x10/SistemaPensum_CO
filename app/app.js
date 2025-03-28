@@ -9,6 +9,8 @@ const alumnoRoutes = require("./routes/alumnoRoutes");
 const userRoutes = require("./routes/userRoutes");
 const clasesRoutes = require("./routes/clasesRoutes");
 const aprobadoRoutes = require("./routes/aprobadoRoutes");
+const carrera_clase_bloqueRoutes = require("./routes/carrera_clase_bloqueRoutes");
+const requisitoRoutes = require("./routes/requisitoRoutes");
 
 App.use(
   cors({
@@ -25,5 +27,7 @@ App.use("/api/Alumno", alumnoRoutes);
 App.use("/api/User", userRoutes);
 App.use("/api/Clases", clasesRoutes);
 App.use("/api/Aprobado", aprobadoRoutes);
+App.use("/api/CarreraCM", carrera_clase_bloqueRoutes);
+App.use("/api/Requisito", requisitoRoutes);
 
 module.exports = App;
