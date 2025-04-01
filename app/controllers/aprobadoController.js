@@ -19,36 +19,36 @@ async function getAprobado(req, res) {
 
 const insertAprobado = async (req, res) => {
   try {
-    const { id_aprobado, alumnoId, id_clase, nota_final } = req.body;
+    const { alumnoId, id_clase, nota_final } = req.body;
 
-    if (!id_aprobado || !alumnoId || !id_clase || nota_final === undefined) {
+    // Validar solo los campos requeridos (sin id_aprobado)
+    if (!alumnoId || !id_clase || nota_final === undefined) {
       return res
         .status(400)
         .json({ error: "Todos los campos son obligatorios" });
     }
 
     const existenciaAprobado = await aprobado.findOne({
-      where: { id_aprobado },
+      where: { alumnoId, id_clase }, 
     });
+    
     if (existenciaAprobado) {
       return res.status(400).json({ message: "La clase ya está aprobada" });
     }
 
     const result = await aprobado.create({
-      id_aprobado,
       alumnoId,
       id_clase,
       nota_final,
     });
 
-    return res
-      .status(201)
-      .json({ message: "Clase guardada exitosamente", result });
+    res.status(201).json(result);
   } catch (error) {
-    console.error("Error al insertar en aprobado:", error);
-    return res.status(500).json({ error: error.message });
+    console.error("Error al insertar el registro:", error);
+    res.status(500).json({ error: "Error al insertar el registro" });
   }
 };
+
 
 const deleteAprobado = async (req, res) => {
   try {
@@ -114,6 +114,38 @@ const updateAprobado = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+const getClasesAprobadasPorAlumno = async (req, res) => {
+  try {
+    const { alumnoId } = req.params;
+
+    if (!alumnoId) {
+      return res.status(400).json({ message: "El alumnoId es requerido." });
+    }
+
+    // Obtener las clases aprobadas del alumno, sin el filtro de estado y sin incluir nota_final
+    const clasesAprobadas = await aprobado.findAll({
+      where: { alumnoId },
+      include: [
+        {
+          model: db.clase,
+          attributes: ['id_clase', 'nombre_clase'], // Solo los atributos id_clase y nombre_clase
+        },
+      ],
+    });
+
+    if (clasesAprobadas.length === 0) {
+      return res.status(404).json({ message: "No se encontraron clases aprobadas para este alumno." });
+    }
+
+    return res.status(200).json({ clasesAprobadas });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 module.exports = {
   getAprobado,

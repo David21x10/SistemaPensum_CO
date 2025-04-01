@@ -10,4 +10,7 @@ post("/insertAprobado", async (req, res)=> await aprobadoController.insertAproba
 delete("/deleteAprobado", async (req, res)=> await aprobadoController.deleteAprobado(req,res)).
 put("/updateAprobado", async (req, res)=> await aprobadoController.updateAprobado(req,res));
 
+
+
+
 module.exports=apiRoutes;

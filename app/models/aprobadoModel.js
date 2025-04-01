@@ -9,6 +9,7 @@ module.exports = (sequelize) => {
     id_aprobado: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
     alumnoId: {
       allowNull: false,
@@ -37,5 +38,7 @@ module.exports = (sequelize) => {
     tableName: "aprobado",
     timestamps: false,
   };
+
+  
   return sequelize.define("aprobado", attributes, options);
 };
