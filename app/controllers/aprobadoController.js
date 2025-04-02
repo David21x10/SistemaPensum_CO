@@ -21,7 +21,7 @@ const insertAprobado = async (req, res) => {
   try {
     const { alumnoId, id_clase, nota_final } = req.body;
 
-    // Validar solo los campos requeridos (sin id_aprobado)
+  
     if (!alumnoId || !id_clase || nota_final === undefined) {
       return res
         .status(400)
