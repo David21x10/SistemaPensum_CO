@@ -55,24 +55,25 @@ const deleteAprobado = async (req, res) => {
     const { id_aprobado } = req.body;
 
     if (!id_aprobado) {
-      return res.status(400).json({ error: "El idaprobado es requerido" });
+      return res.status(400).json({ error: "El id_aprobado es requerido" });
     }
 
-    const aprobadoRemove = await aprobado.findByPk(id_aprobado);
+    // Buscar el curso aprobado por el 'id_aprobado'
+    const aprobadoRemove = await aprobado.findOne({
+      where: {
+        id_clase: id_aprobado, 
+      },
+    });
 
     if (aprobadoRemove) {
       await aprobadoRemove.destroy();
-      return res
-        .status(200)
-        .json({ message: "Clase aprobada eliminada de forma exitosa" });
+      return res.status(200).json({ message: "Clase aprobada eliminada de forma exitosa" });
     } else {
-      return res
-        .status(404)
-        .json({ error: "La clase aprobada no fue encontrada" });
+      return res.status(404).json({ error: "La clase aprobada no fue encontrada" });
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message || "Sucedió un error inesperado" });
   }
 };
 
@@ -115,41 +116,31 @@ const updateAprobado = async (req, res) => {
   }
 };
 
-const getClasesAprobadasPorAlumno = async (req, res) => {
+async function getAprobadoAlumno(req, res) {
+  const { alumnoId } = req.query; 
+
+  if (!alumnoId) {
+    return res.status(400).send({ message: "Se requiere el alumnoId" });
+  }
+
   try {
-    const { alumnoId } = req.params;
-
-    if (!alumnoId) {
-      return res.status(400).json({ message: "El alumnoId es requerido." });
-    }
-
-    // Obtener las clases aprobadas del alumno, sin el filtro de estado y sin incluir nota_final
-    const clasesAprobadas = await aprobado.findAll({
-      where: { alumnoId },
-      include: [
-        {
-          model: db.clase,
-          attributes: ['id_clase', 'nombre_clase'], // Solo los atributos id_clase y nombre_clase
-        },
-      ],
+    const result = await aprobado.findAll({
+      where: {
+        alumnoId: alumnoId, 
+      },
     });
 
-    if (clasesAprobadas.length === 0) {
-      return res.status(404).json({ message: "No se encontraron clases aprobadas para este alumno." });
-    }
-
-    return res.status(200).json({ clasesAprobadas });
+    res.status(200).send({ result });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
+    res.status(500).send({ message: error.message || "Sucedió un error inesperado" });
   }
-};
-
+}
 
 
 module.exports = {
   getAprobado,
   insertAprobado,
   deleteAprobado,
-  updateAprobado
+  updateAprobado,
+  getAprobadoAlumno
 };
