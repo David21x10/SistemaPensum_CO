@@ -25,6 +25,7 @@ async function signUp(req, res) {
     User.create({
         userId: req.body['userId'],
         pass: newPass,
+        RoleId: req.body['RoleId'],
     })
         .then(data => {
             res.status(200).send(data)
