@@ -50,7 +50,30 @@ const insertAlumno = async (req, res) => {
   }
 };
 
+async function getAlumnoId(req, res) {
+  try {
+    const { alumnoId } = req.query; 
+
+    if (!alumnoId) {
+      return res.status(400).json({ message: "Debe proporcionar un alumnoId" });
+    }
+
+    const alumnoEncontrado = await alumno.findOne({
+      where: { alumnoId }
+    });
+
+    if (!alumnoEncontrado) {
+      return res.status(404).json({ message: "Alumno no encontrado" });
+    }
+
+    res.status(200).json({ alumno: alumnoEncontrado });
+  } catch (error) {
+    res.status(500).json({ message: "Error en el servidor", error: error.message });
+  }
+}
+
 module.exports = {
   getAlumno,
   insertAlumno,
+  getAlumnoId,
 };
